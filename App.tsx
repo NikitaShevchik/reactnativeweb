@@ -1,47 +1,59 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Alert, Button, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+// import {nanoid as id} from 'nanoid'
+import {  StyleSheet,  View, Text, FlatList  } from 'react-native';
+import FormInput from './components/FormInput';
+import Header from './components/Header';
+import ListItem from './components/ListItem';
+import { callbackFormInterface } from './Types/Types';
+
+function id(){
+  return Date.now().toString()
+}
 
 export default function App() {
-  const [text, setText] = useState(null)
+  const [todo, setTodo] = useState([
+    {text: 'Make coffee', key: '1'},
+    {text: 'Play GoF / Dota', key: '2'},
+    {text: 'Task from Artyom', key: '3'},
+    {text: 'Food', key: '4'},
+  ])
 
-  const handleButtonPress: VoidFunction = () => {
-    Alert.alert('Do you want to set Text', 'Set text upper?', [{text: 'Set', onPress: ()=>setText(()=> 'Setted from the button')}, {text: 'Del', onPress: ()=> setText(null)}])
+  const handleClick:any = (todoText: string) => {
+    if (todoText){
+      setTodo([{text: todoText, key: id()}, ...todo])
+    }
+  }
+  const handleOnPress: any = (key: string) => {
+    setTodo(todo.filter(todo => todo.key !== key))
   }
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>Hello</Text>
-      <Text numberOfLines={1} onPress={()=> Alert.alert('Lorem ipsum dolor sit amet consectetur adipisicing elit.')} >Lorem...</Text>
-      <Button
-        title="Press me"
-        onPress={() => Alert.alert('Simple Button pressed')}
-      />
-      {text? <Text>{text}</Text> : null}
-      <Button
-        title="Set Up Text"
-        touchSoundDisabled
-        color={'pink'}
-        onPress={handleButtonPress}
-      />
-      <Button
-        title="Press me"
-        disabled
-        onPress={() => Alert.alert('Cannot press this one')}
-      />
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <View style={styles.main}>
+      <Header/>
+      <View style={styles.list}>
+        <View style={{ width:'100%'}}>
+          <FormInput callback={handleClick}/>
+        </View>
+        <FlatList style={styles.flatlist} data={todo} renderItem={({item}) => (
+          <ListItem element = {item} onPress={handleOnPress}/>
+        )}/>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  main:{
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center'
+    backgroundColor: '#17181f',
   },
-  buttonYellow:{
-    backgroundColor: 'yellow',
-    color: '#000'
+  list:{
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  flatlist:{
+    marginTop: 5
   }
 });
